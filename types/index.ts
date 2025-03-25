@@ -25,4 +25,18 @@ export interface IGenerateRequest {
     artStyle: string;
     colorTone: string;
   };
+}
+
+export interface ICommentsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  postId: string;
+  comments: IComment[];
+  onAddComment: (content: string) => void;
+}
+
+export interface IPostCardProps {
+  post: IPost;
+  onLike?: (postId: string) => void;
+  onComment?: (postId: string) => void;
 } 
