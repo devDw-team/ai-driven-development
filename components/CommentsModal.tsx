@@ -5,15 +5,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IComment } from '@/types';
-
-interface CommentsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  postId: string;
-  comments: IComment[];
-  onAddComment: (content: string) => void;
-}
+import { IComment, ICommentsModalProps } from '@/types';
 
 export default function CommentsModal({
   isOpen,
@@ -21,7 +13,7 @@ export default function CommentsModal({
   postId,
   comments,
   onAddComment,
-}: CommentsModalProps) {
+}: ICommentsModalProps) {
   const [newComment, setNewComment] = useState('');
 
   if (!isOpen) return null;

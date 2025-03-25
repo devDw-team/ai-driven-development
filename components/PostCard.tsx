@@ -4,16 +4,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Heart, MessageCircle } from 'lucide-react';
-import { IPost } from '@/types';
+import { IPost, IPostCardProps } from '@/types';
 import { Button } from '@/components/ui/button';
 
-interface PostCardProps {
-  post: IPost;
-  onLike?: (postId: string) => void;
-  onComment?: (postId: string) => void;
-}
-
-export default function PostCard({ post, onLike, onComment }: PostCardProps) {
+export default function PostCard({ post, onLike, onComment }: IPostCardProps) {
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likes);
