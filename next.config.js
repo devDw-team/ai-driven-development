@@ -1,7 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['picsum.photos', 'i.pravatar.cc'], // 외부 이미지 도메인 허용
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 
