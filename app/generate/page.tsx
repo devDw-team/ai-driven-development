@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Loader2, RefreshCw, Save, Share2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/toast";
+
 
 // 목업 데이터
 const MOCK_IMAGE_URL = "https://picsum.photos/800/600";
