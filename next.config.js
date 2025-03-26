@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'pravatar.cc',
+        hostname: 'i.pravatar.cc',
         port: '',
         pathname: '/**',
       },
