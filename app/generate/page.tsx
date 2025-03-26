@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -8,18 +8,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Loader2, RefreshCw, Save, Share2, Download } from "lucide-react";
 import { toast } from "sonner";
-
+import { useSearchParams } from 'next/navigation';
 
 // 목업 데이터
 const MOCK_IMAGE_URL = "https://picsum.photos/800/600";
 
 export default function GeneratePage() {
+  const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState('');
   const [artStyle, setArtStyle] = useState('digital');
   const [colorTone, setColorTone] = useState('colorful');
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  // URL 쿼리 파라미터에서 프롬프트 가져오기
+  useEffect(() => {
+    const promptFromUrl = searchParams.get('prompt');
+    if (promptFromUrl) {
+      setPrompt(decodeURIComponent(promptFromUrl));
+    }
+  }, [searchParams]);
 
   // 스타일 옵션
   const artStyles = [
