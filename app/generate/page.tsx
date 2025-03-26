@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Loader2, RefreshCw, Save, Share2 } from "lucide-react";
+import { Loader2, RefreshCw, Save, Share2, Download } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -86,6 +86,39 @@ export default function GeneratePage() {
   // 공유하기 핸들러
   const handleShare = () => {
     toast.info("커뮤니티 공유 기능은 현재 준비 중입니다.");
+  };
+
+  // 다운로드 핸들러
+  const handleDownload = async () => {
+    if (!generatedImage) return;
+
+    try {
+      // 이미지 URL에서 파일명 추출
+      const fileName = `artify-${Date.now()}.jpg`;
+      
+      // 이미지 다운로드
+      const response = await fetch(generatedImage);
+      const blob = await response.blob();
+      
+      // Blob URL 생성
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      // 다운로드 링크 생성 및 클릭
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // 정리
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      
+      toast.success("이미지가 다운로드되었습니다.");
+    } catch (error) {
+      toast.error("다운로드 중 오류가 발생했습니다.");
+      console.error('Download error:', error);
+    }
   };
 
   return (
@@ -191,6 +224,10 @@ export default function GeneratePage() {
               <Button variant="outline" onClick={handleSave}>
                 <Save className="mr-2 h-4 w-4" />
                 저장하기
+              </Button>
+              <Button variant="outline" onClick={handleDownload}>
+                <Download className="mr-2 h-4 w-4" />
+                다운로드
               </Button>
               <Button variant="outline" onClick={handleShare}>
                 <Share2 className="mr-2 h-4 w-4" />
