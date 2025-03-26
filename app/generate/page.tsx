@@ -7,14 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Loader2, RefreshCw, Save, Share2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 
 // 목업 데이터
 const MOCK_IMAGE_URL = "https://picsum.photos/800/600";
 
 export default function GeneratePage() {
-  const { toast } = useToast();
   const [prompt, setPrompt] = useState('');
   const [artStyle, setArtStyle] = useState('digital');
   const [colorTone, setColorTone] = useState('colorful');
@@ -81,18 +80,12 @@ export default function GeneratePage() {
 
   // 저장하기 핸들러
   const handleSave = () => {
-    toast({
-      title: "저장 완료",
-      description: "이미지가 갤러리에 저장되었습니다.",
-    });
+    toast.success("이미지가 갤러리에 저장되었습니다.");
   };
 
   // 공유하기 핸들러
   const handleShare = () => {
-    toast({
-      title: "준비 중",
-      description: "커뮤니티 공유 기능은 현재 준비 중입니다.",
-    });
+    toast.info("커뮤니티 공유 기능은 현재 준비 중입니다.");
   };
 
   return (
