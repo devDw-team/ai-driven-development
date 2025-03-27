@@ -18,7 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { IGalleryImage } from '@/types/gallery';
 import { categories } from '@/lib/mock/gallery';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ImageEditModalProps {
   image: IGalleryImage | null;
@@ -35,59 +35,65 @@ export function ImageEditModal({
 }: ImageEditModalProps) {
   const [editedImage, setEditedImage] = useState<IGalleryImage | null>(image);
 
+  useEffect(() => {
+    setEditedImage(image);
+  }, [image]);
+
   if (!editedImage) return null;
 
+  const handleChange = (
+    field: keyof IGalleryImage,
+    value: string | boolean | string[]
+  ) => {
+    setEditedImage((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
+  };
+
   const handleSave = () => {
-    onSave(editedImage);
-    onClose();
+    if (editedImage) {
+      onSave(editedImage);
+      onClose();
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>이미지 정보 수정</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">이미지 정보 수정</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-6 py-4">
           <div className="space-y-2">
             <Label htmlFor="title">제목</Label>
             <Input
               id="title"
               value={editedImage.title}
-              onChange={(e) =>
-                setEditedImage({ ...editedImage, title: e.target.value })
-              }
+              onChange={(e) => handleChange('title', e.target.value)}
+              placeholder="이미지 제목을 입력하세요"
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">설명</Label>
-            <Textarea
+            <Input
               id="description"
               value={editedImage.description}
-              onChange={(e) =>
-                setEditedImage({ ...editedImage, description: e.target.value })
-              }
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="이미지 설명을 입력하세요"
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="category">카테고리</Label>
-            <Select
+            <Input
+              id="category"
               value={editedImage.category}
-              onValueChange={(value) =>
-                setEditedImage({ ...editedImage, category: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="카테고리 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(e) => handleChange('category', e.target.value)}
+              placeholder="카테고리를 입력하세요"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="tags">태그</Label>
@@ -95,29 +101,28 @@ export function ImageEditModal({
               id="tags"
               value={editedImage.tags.join(', ')}
               onChange={(e) =>
-                setEditedImage({
-                  ...editedImage,
-                  tags: e.target.value.split(',').map((tag) => tag.trim()),
-                })
+                handleChange(
+                  'tags',
+                  e.target.value.split(',').map((tag) => tag.trim())
+                )
               }
+              placeholder="태그를 쉼표로 구분하여 입력하세요"
             />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="isPublic">공개 설정</Label>
             <Switch
               id="isPublic"
               checked={editedImage.isPublic}
-              onCheckedChange={(checked) =>
-                setEditedImage({ ...editedImage, isPublic: checked })
-              }
+              onCheckedChange={(checked) => handleChange('isPublic', checked)}
             />
-            <Label htmlFor="isPublic">공개</Label>
           </div>
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
-              취소
-            </Button>
-            <Button onClick={handleSave}>저장</Button>
-          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
+            취소
+          </Button>
+          <Button onClick={handleSave}>저장</Button>
         </div>
       </DialogContent>
     </Dialog>

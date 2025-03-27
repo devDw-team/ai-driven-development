@@ -11,22 +11,29 @@ import { useState } from 'react';
 
 export default function GalleryPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [category, setCategory] = useState('전체');
+  const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
   const [isPublic, setIsPublic] = useState(false);
   const [selectedImage, setSelectedImage] = useState<IGalleryImage | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [images, setImages] = useState<IGalleryImage[]>(mockGalleryImages);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // 목업 데이터 필터링 및 정렬
-  const filteredImages = mockGalleryImages
+  const filteredImages = images
     .filter((image) => {
-      if (category === '전체') return true;
+      if (category === 'all') return true;
       return image.category === category;
     })
     .filter((image) => {
       if (!isPublic) return true;
       return image.isPublic;
+    })
+    .filter((image) => {
+      if (!searchQuery) return true;
+      return image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             image.description.toLowerCase().includes(searchQuery.toLowerCase());
     })
     .sort((a, b) => {
       if (sortBy === 'latest') {
@@ -48,6 +55,9 @@ export default function GalleryPage() {
   const handleDelete = (image: IGalleryImage) => {
     // TODO: 삭제 API 연동
     console.log('Delete image:', image);
+    setImages(images.filter((img) => img.id !== image.id));
+    setIsDetailModalOpen(false);
+    setSelectedImage(null);
   };
 
   const handleShare = (image: IGalleryImage) => {
@@ -63,6 +73,13 @@ export default function GalleryPage() {
   const handleSave = (image: IGalleryImage) => {
     // TODO: 수정 API 연동
     console.log('Save image:', image);
+    setImages(
+      images.map((img) => (img.id === image.id ? image : img))
+    );
+  };
+
+  const handleUpdate = (image: IGalleryImage) => {
+    handleSave(image);
   };
 
   return (
@@ -77,6 +94,8 @@ export default function GalleryPage() {
         onSortChange={setSortBy}
         isPublic={isPublic}
         onPublicChange={setIsPublic}
+        onSearch={setSearchQuery}
+        currentView={viewMode}
       />
       <div
         className={
@@ -89,6 +108,7 @@ export default function GalleryPage() {
           <GalleryCard
             key={image.id}
             image={image}
+            onClick={handleImageClick}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onShare={handleShare}
@@ -96,28 +116,35 @@ export default function GalleryPage() {
         ))}
       </div>
 
-      <ImageDetailModal
-        image={selectedImage}
-        isOpen={isDetailModalOpen}
-        onClose={() => {
-          setIsDetailModalOpen(false);
-          setSelectedImage(null);
-        }}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onShare={handleShare}
-        onDownload={handleDownload}
-      />
-
-      <ImageEditModal
-        image={selectedImage}
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedImage(null);
-        }}
-        onSave={handleSave}
-      />
+      {selectedImage && (
+        <>
+          <ImageDetailModal
+            image={selectedImage}
+            isOpen={isDetailModalOpen}
+            onClose={() => {
+              setIsDetailModalOpen(false);
+              setSelectedImage(null);
+            }}
+            onEdit={() => {
+              setIsDetailModalOpen(false);
+              setIsEditModalOpen(true);
+            }}
+            onDelete={handleDelete}
+            onShare={handleShare}
+            onDownload={handleDownload}
+            onUpdate={handleUpdate}
+          />
+          <ImageEditModal
+            image={selectedImage}
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setSelectedImage(null);
+            }}
+            onSave={handleUpdate}
+          />
+        </>
+      )}
     </div>
   );
 } 

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -8,7 +9,8 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { categories, sortOptions } from '@/lib/mock/gallery';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, Search } from 'lucide-react';
+import { useState } from 'react';
 
 interface GalleryFiltersProps {
   viewMode: 'grid' | 'list';
@@ -19,6 +21,8 @@ interface GalleryFiltersProps {
   onSortChange: (sort: string) => void;
   isPublic: boolean;
   onPublicChange: (isPublic: boolean) => void;
+  onSearch: (query: string) => void;
+  currentView: 'grid' | 'list';
 }
 
 export function GalleryFilters({
@@ -30,24 +34,50 @@ export function GalleryFilters({
   onSortChange,
   isPublic,
   onPublicChange,
+  onSearch,
+  currentView,
 }: GalleryFiltersProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
+
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-      <div className="flex items-center gap-4">
-        <Select value={category} onValueChange={onCategoryChange}>
+    <div className="space-y-4">
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="이미지 검색..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Button type="submit">
+          <Search className="mr-2 h-4 w-4" />
+          검색
+        </Button>
+      </form>
+
+      <div className="flex flex-wrap gap-4">
+        <Select onValueChange={onCategoryChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="카테고리 선택" />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
+            <SelectItem value="all">전체</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={onSortChange}>
+        <Select onValueChange={onSortChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="정렬" />
           </SelectTrigger>
@@ -70,23 +100,23 @@ export function GalleryFilters({
             공개 이미지만 보기
           </label>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        <Button
-          variant={viewMode === 'grid' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => onViewModeChange('grid')}
-        >
-          <LayoutGrid className="w-4 h-4" />
-        </Button>
-        <Button
-          variant={viewMode === 'list' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => onViewModeChange('list')}
-        >
-          <List className="w-4 h-4" />
-        </Button>
+        <div className="flex gap-2 ml-auto">
+          <Button
+            variant={currentView === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => onViewModeChange('grid')}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={currentView === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => onViewModeChange('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
