@@ -27,6 +27,20 @@ export interface IGenerateRequest {
   };
 }
 
+export interface IGenerateResponse {
+  success: true;
+  imageUrl: string;
+  generationId: string;
+}
+
+export interface IErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
 export interface ICommentsModalProps {
   isOpen: boolean;
   onClose: () => void;

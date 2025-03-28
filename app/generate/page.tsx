@@ -54,25 +54,44 @@ export default function GeneratePage() {
     { value: 'metallic', label: '메탈릭' },
   ];
 
-  // 이미지 생성 시뮬레이션
+  // 이미지 생성
   const handleGenerate = async () => {
     if (!prompt) return;
     
     setIsLoading(true);
     setProgress(0);
     
-    // 진행률 시뮬레이션
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsLoading(false);
-          setGeneratedImage(MOCK_IMAGE_URL);
-          return 100;
-        }
-        return prev + 10;
+    try {
+      // API 요청
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt,
+          styleOptions: {
+            artStyle,
+            colorTone,
+          },
+        }),
       });
-    }, 500);
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error?.message || '이미지 생성에 실패했습니다.');
+      }
+
+      setGeneratedImage(data.imageUrl);
+      setProgress(100);
+      toast.success('이미지가 생성되었습니다.');
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast.error('이미지 생성 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 생성 취소

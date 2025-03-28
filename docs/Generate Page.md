@@ -21,8 +21,7 @@
      - 빈 입력 시 생성 버튼 비활성화
      - 최대 글자 수 초과 시 입력 제한
    - **데이터 연동**:
-     - 메인 페이지에서 전달된 프롬프트 자동 입력
-     - URL 쿼리 파라미터에서 프롬프트 디코딩
+     - URL 쿼리 파라미터에서 프롬프트 자동 입력 및 디코딩
 
 2. **스타일 옵션 섹션**
    - **UI 구성**: 
@@ -30,10 +29,24 @@
      - 그리드 레이아웃으로 옵션들을 배치 (모바일: 1열, 데스크톱: 2열)
    - **스타일 옵션**:
      - **아트 스타일**:
-       - 디지털아트, 수채화, 유화, 펜화, 연필화
-       - 로고_미니멀, 로고_3D, 로고_그라디언트, 로고_빈티지, 로고_모던
+       - 디지털아트 (digital art style, high quality, detailed)
+       - 수채화 (watercolor painting style, artistic, flowing)
+       - 유화 (oil painting style, textured, rich colors)
+       - 펜화 (pen and ink style, clean lines, detailed)
+       - 연필화 (pencil sketch style, artistic, detailed)
+       - 로고_미니멀 (minimalist logo design, clean, simple)
+       - 로고_3D (3D logo design, modern, depth)
+       - 로고_그라디언트 (gradient logo design, modern, colorful)
+       - 로고_빈티지 (vintage logo design, retro style)
+       - 로고_모던 (modern logo design, contemporary)
      - **색감**:
-       - 밝은, 어두운, 파스텔, 흑백, 컬러풀, 모노톤, 메탈릭
+       - 밝은 (bright and vibrant colors)
+       - 어두운 (dark and moody colors)
+       - 파스텔 (pastel color palette, soft)
+       - 흑백 (black and white, monochrome)
+       - 컬러풀 (colorful and vibrant palette)
+       - 모노톤 (monotone color scheme)
+       - 메탈릭 (metallic colors, shiny)
    - **상호작용**:
      - 각 옵션 선택 시 시각적 피드백 제공
      - 기본값 설정: 디지털아트, 컬러풀
@@ -47,7 +60,7 @@
    - **상호작용**:
      - 클릭 시 로딩 상태로 변경
      - 로딩 중에는 버튼 비활성화
-     - 로딩 중일 때 스피너 아이콘 표시
+     - 로딩 중일 때 Loader2 아이콘 표시
    - **오류 처리**:
      - 프롬프트 미입력 시 버튼 비활성화
 
@@ -57,7 +70,7 @@
      - 진행률 텍스트 표시 (중앙)
      - 취소 버튼 제공
    - **상호작용**:
-     - 10% 단위로 진행률 업데이트
+     - 진행률 업데이트
      - 취소 버튼으로 생성 중단 가능
 
 5. **생성 결과 섹션**
@@ -78,11 +91,10 @@
 #### 2. 사용자 흐름 및 상호작용
 
 1. **이미지 생성 프로세스**
-   - 메인 페이지에서 프롬프트 입력
-   - 이미지 생성 페이지로 자동 이동 및 프롬프트 전달
+   - URL 쿼리 파라미터에서 프롬프트 자동 입력
    - 스타일 옵션 선택
    - 생성 버튼 클릭
-   - 로딩 상태 표시 (진행률 0% → 100%)
+   - 로딩 상태 표시
    - 결과 표시
 
 2. **결과 후 액션**
@@ -97,6 +109,7 @@
    - 텍스트 입력 필드 정상 동작 확인
    - 글자 수 제한 기능 확인
    - 실시간 카운터 업데이트 확인
+   - URL 쿼리 파라미터 자동 입력 확인
 
 2. **스타일 옵션**
    - 모든 옵션 선택 가능 확인
@@ -146,11 +159,27 @@
   interface IErrorResponse {
     success: false;
     error: {
-      code: string;    // UNAUTHORIZED | INVALID_PROMPT | GENERATION_FAILED
+      code: string;    // CONFIGURATION_ERROR | INVALID_PROMPT | GENERATION_FAILED | INTERNAL_ERROR
       message: string;
     };
   }
   ```
+- **프롬프트 처리**:
+  - 스타일 옵션에 따른 상세 프롬프트 매핑
+  - 아트 스타일별 구체적인 프롬프트 설정
+  - 색감별 구체적인 프롬프트 설정
+- **Replicate API 연동**:
+  - 모델: black-forest-labs/flux-schnell
+  - 설정:
+    - aspect_ratio: '16:9'
+    - num_outputs: 1
+    - output_format: 'webp'
+    - output_quality: 90
+- **에러 처리**:
+  - API 토큰 미설정
+  - 프롬프트 누락
+  - 생성 실패
+  - 내부 서버 오류
 
 #### 2. 생성 결과 저장 API
 
