@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       model: 'black-forest-labs/flux-schnell',
       input: {
         prompt: enhancedPrompt,
-        aspect_ratio: '16:9',
+        aspect_ratio: '1:1',
         num_outputs: 1,
         output_format: 'webp',
         output_quality: 90,

@@ -46,13 +46,13 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
       <div className="max-w-[1200px] h-full mx-auto px-6 flex items-center justify-between">
         {/* 로고 */}
-        <Link href="/" className="h-8">
+        <Link href="/" className="h-12">
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt="로고"
-            width={120}
-            height={32}
-            className="h-8 w-auto"
+            width={48}
+            height={48}
+            className="h-12 w-12"
             priority
           />
         </Link>
