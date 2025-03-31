@@ -6,10 +6,12 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { SignedIn, SignedOut, UserButton, SignInButton, useClerk } from '@clerk/nextjs';
 
 const Header = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { signOut } = useClerk();
 
   // ESC 키로 메뉴 닫기
   useEffect(() => {
@@ -73,6 +75,20 @@ const Header = () => {
               {item.name}
             </Link>
           ))}
+          
+          {/* 인증 버튼 */}
+          <div className="ml-4">
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                  로그인
+                </button>
+              </SignInButton>
+            </SignedOut>
+          </div>
         </nav>
 
         {/* 모바일 메뉴 버튼 */}
@@ -109,6 +125,20 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* 모바일 인증 버튼 */}
+            <div className="px-6 py-4">
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="w-full rounded-md bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    로그인
+                  </button>
+                </SignInButton>
+              </SignedOut>
+            </div>
           </div>
         </div>
       </div>
