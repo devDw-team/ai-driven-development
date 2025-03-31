@@ -6,12 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { SignedIn, SignedOut, UserButton, SignInButton, useClerk } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/nextjs';
 
 const Header = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { signOut } = useClerk();
 
   // ESC 키로 메뉴 닫기
   useEffect(() => {
