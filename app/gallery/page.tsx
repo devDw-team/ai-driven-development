@@ -83,7 +83,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="container py-8">
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <GalleryHeader />
       <GalleryFilters
         viewMode={viewMode}
@@ -100,19 +100,27 @@ export default function GalleryPage() {
       <div
         className={
           viewMode === 'grid'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
-            : 'space-y-4'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full'
+            : 'flex flex-col gap-6 max-w-4xl mx-auto w-full'
         }
       >
         {filteredImages.map((image) => (
-          <GalleryCard
+          <div
             key={image.id}
-            image={image}
-            onClick={handleImageClick}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onShare={handleShare}
-          />
+            className={
+              viewMode === 'grid'
+                ? 'w-full aspect-[4/3]'
+                : 'w-full'
+            }
+          >
+            <GalleryCard
+              image={image}
+              onClick={handleImageClick}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onShare={handleShare}
+            />
+          </div>
         ))}
       </div>
 
