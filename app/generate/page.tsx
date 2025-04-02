@@ -9,11 +9,13 @@ import { Card } from "@/components/ui/card";
 import { Loader2, RefreshCw, Save, Share2, Download } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 
 // 목업 데이터
 const MOCK_IMAGE_URL = "https://picsum.photos/800/600";
 
 export default function GeneratePage() {
+  const { user } = useUser();
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState('');
   const [artStyle, setArtStyle] = useState('digital');
@@ -58,6 +60,11 @@ export default function GeneratePage() {
   const handleGenerate = async () => {
     if (!prompt) return;
     
+    if (!user?.id) {
+      toast.error('이미지 생성을 위해 로그인이 필요합니다.');
+      return;
+    }
+    
     setIsLoading(true);
     setProgress(0);
     
@@ -74,6 +81,7 @@ export default function GeneratePage() {
             artStyle,
             colorTone,
           },
+          userId: user.id,
         }),
       });
 

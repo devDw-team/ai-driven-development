@@ -25,16 +25,17 @@ export interface IGenerateRequest {
     artStyle: string;
     colorTone: string;
   };
+  userId: string;
 }
 
 export interface IGenerateResponse {
-  success: true;
+  success: boolean;
   imageUrl: string;
   generationId: string;
 }
 
 export interface IErrorResponse {
-  success: false;
+  success: boolean;
   error: {
     code: string;
     message: string;

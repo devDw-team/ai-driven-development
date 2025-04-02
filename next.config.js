@@ -11,6 +11,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'replicate.delivery',
       },
+      {
+        protocol: 'https',
+        hostname: 'nllylmjqgcmjjmueltux.supabase.co',
+      },
     ],
   },  /* config options here */
   reactStrictMode: true,
