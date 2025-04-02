@@ -1,25 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['picsum.photos', 'i.pravatar.cc'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'replicate.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'replicate.delivery',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'nllylmjqgcmjjmueltux.supabase.co',
+        pathname: '/storage/v1/object/public/images/**',
       },
     ],
-  },  /* config options here */
+  },
   reactStrictMode: true,
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false,
   },
 };
 

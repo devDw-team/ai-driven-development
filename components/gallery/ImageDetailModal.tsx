@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -12,12 +13,15 @@ import { Download, Edit, Plus, Share2, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ImageEditModal } from './ImageEditModal';
+import { Badge } from "@/components/ui/badge"
+import { getImageUrl } from '@/utils/supabase';
+import { toast } from 'sonner';
 
 interface ImageDetailModalProps {
-  image: IGalleryImage | null;
+  image: IGalleryImage;
   isOpen: boolean;
   onClose: () => void;
-  onEdit: (image: IGalleryImage) => void;
+  onEdit: () => void;
   onDelete: (image: IGalleryImage) => void;
   onShare: (image: IGalleryImage) => void;
   onDownload: (image: IGalleryImage) => void;
@@ -37,6 +41,8 @@ export function ImageDetailModal({
   const [editedImage, setEditedImage] = useState<IGalleryImage | null>(image);
   const [newTag, setNewTag] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const imageUrl = getImageUrl(image.filePath);
 
   useEffect(() => {
     setEditedImage(image);
@@ -68,8 +74,40 @@ export function ImageDetailModal({
     });
   };
 
-  const handleSave = () => {
-    onUpdate(editedImage);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      
+      const response = await fetch(`/api/gallery/${editedImage.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tags: editedImage.tags,
+          isPublic: editedImage.isPublic,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('이미지 업데이트에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('이미지가 성공적으로 업데이트되었습니다.');
+        onUpdate(editedImage);
+        onClose();
+      } else {
+        throw new Error(data.error?.message || '이미지 업데이트에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('이미지 업데이트 중 오류 발생:', error);
+      toast.error('이미지 업데이트에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEditSave = (updatedImage: IGalleryImage) => {
@@ -84,118 +122,94 @@ export function ImageDetailModal({
           <DialogHeader className="mb-6">
             <DialogTitle className="text-2xl font-bold">{editedImage.title}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="relative aspect-square w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="relative aspect-square">
               <Image
-                src={editedImage.imageUrl}
+                src={imageUrl}
                 alt={editedImage.title}
                 fill
-                className="object-cover rounded-lg shadow-lg"
-                priority
+                className="object-cover rounded-lg"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-lg mb-2">설명</h3>
-                <p className="text-muted-foreground text-base">{editedImage.description}</p>
+                <h2 className="text-2xl font-bold mb-2">{editedImage.title}</h2>
+                <p className="text-muted-foreground">{editedImage.description}</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">프롬프트</h3>
-                <p className="text-muted-foreground text-base">{editedImage.prompt}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">스타일</h3>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-sm bg-secondary px-3 py-1.5 rounded-full">
-                    {editedImage.styleOptions.artStyle}
-                  </span>
-                  <span className="text-sm bg-secondary px-3 py-1.5 rounded-full">
-                    {editedImage.styleOptions.colorTone}
-                  </span>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium mb-2">프롬프트</h3>
+                  <p className="text-sm text-muted-foreground">{editedImage.prompt}</p>
                 </div>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">태그</h3>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {editedImage.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-full flex items-center gap-1.5"
+
+                <div>
+                  <h3 className="font-medium mb-2">스타일 옵션</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline">{editedImage.artStyle}</Badge>
+                    <Badge variant="outline">{editedImage.colorTone}</Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">태그</h3>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {editedImage.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                        {tag}
+                        <button
+                          onClick={() => handleRemoveTag(tag)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      placeholder="새 태그 입력"
+                      className="flex-1"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleAddTag();
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAddTag}
+                      disabled={!newTag.trim()}
                     >
-                      {tag}
-                      <button
-                        onClick={() => handleRemoveTag(tag)}
-                        className="hover:text-primary/80 transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </span>
-                  ))}
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="새 태그 입력"
-                    className="flex-1"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleAddTag();
-                      }
-                    }}
-                  />
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleAddTag}
-                    className="shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">
-                    생성일: {new Date(editedImage.createdAt).toLocaleDateString()}
-                  </span>
-                  {editedImage.isPublic && (
-                    <span className="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-full">
-                      공개
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-2">
                   <Switch
                     checked={editedImage.isPublic}
                     onCheckedChange={handlePublicChange}
-                    id="public-toggle"
                   />
-                  <label htmlFor="public-toggle" className="text-sm font-medium">
-                    공개 설정
-                  </label>
+                  <span className="text-sm">
+                    {editedImage.isPublic ? '공개' : '비공개'}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-3 pt-6 mt-6 border-t sticky bottom-0 bg-background">
-            <Button onClick={() => setIsEditModalOpen(true)} size="lg">
-              <Edit className="w-4 h-4 mr-2" />
-              수정
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={onClose}>
+              취소
             </Button>
-            <Button onClick={() => onShare(editedImage)} size="lg">
-              <Share2 className="w-4 h-4 mr-2" />
-              공유
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? '저장 중...' : '저장'}
             </Button>
-            <Button onClick={() => onDownload(editedImage)} size="lg">
-              <Download className="w-4 h-4 mr-2" />
-              다운로드
-            </Button>
-            <Button variant="destructive" onClick={() => onDelete(editedImage)} size="lg">
-              <Trash2 className="w-4 h-4 mr-2" />
-              삭제
-            </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       <ImageEditModal

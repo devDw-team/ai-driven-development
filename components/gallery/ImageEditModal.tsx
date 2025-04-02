@@ -79,11 +79,20 @@ export function ImageEditModal({
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">설명</Label>
-            <Input
+            <Textarea
               id="description"
               value={editedImage.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="이미지 설명을 입력하세요"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="prompt">프롬프트</Label>
+            <Textarea
+              id="prompt"
+              value={editedImage.prompt}
+              onChange={(e) => handleChange('prompt', e.target.value)}
+              placeholder="프롬프트를 입력하세요"
             />
           </div>
           <div className="space-y-2">

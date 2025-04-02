@@ -15,8 +15,8 @@
 
 2. **필터 및 정렬 섹션**
    - **UI 구성**: 
-     - 검색 입력 필드 (이미지 제목 및 설명 검색)
-     - 카테고리 선택 드롭다운
+     - 아트 스타일 필터 (Select 컴포넌트)
+     - 색상 톤 필터 (Select 컴포넌트)
      - 정렬 옵션 드롭다운
      - 공개/비공개 토글 스위치
    - **필터 옵션**:
@@ -31,43 +31,45 @@
    - **UI 구성**: 
      - ShadCN의 `Card` 컴포넌트를 사용하여 이미지 카드 표시
      - 반응형 그리드 레이아웃 (모바일: 1열, 태블릿: 2열, 데스크톱: 3열)
+     - 각 이미지는 1:1 비율의 카드 형태로 표시
    - **이미지 카드 구성**:
      - 썸네일 이미지 (aspect-square)
-     - 제목과 설명 (2줄 제한)
      - 생성일자
      - 공개/비공개 뱃지
-     - 액션 버튼 (수정, 공유, 삭제)
+   - **이미지 URL 형식**:
+     ```typescript
+     // 이미지 URL은 Supabase Storage를 사용하며, 다음과 같은 형식을 가집니다:
+     const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${filePath}`
+     ```
    - **상호작용**:
-     - 카드 호버 시 오버레이와 액션 버튼 표시
-     - 이미지 클릭 시 상세 모달 표시
+     - 카드 호버 시 액션 버튼 표시 (공유,삭제)
+     - 카드 클릭 시 상세 모달 표시
+     - 삭제 시 확인 다이얼로그 표시
 
 4. **이미지 상세 모달**
    - **UI 구성**:
      - ShadCN의 `Dialog` 컴포넌트 사용
-     - 큰 크기의 이미지 표시
-     - 제목 및 설명
+     - 원본 이미지 표시
+     - 프롬프트 정보
+     - 스타일 옵션 정보
+     - 생성 날짜
      - 태그 관리 섹션
-     - 공개/비공개 설정
-   - **액션 버튼**:
-     - 수정 (Edit 아이콘)
-     - 삭제 (Trash2 아이콘)
-     - 공유 (Share2 아이콘)
-     - 다운로드 (Download 아이콘)
    - **상호작용**:
      - 모달 외부 클릭 또는 ESC 키로 닫기
-     - 수정 버튼 클릭 시 편집 모달로 전환
+     - 태그 추가/삭제
      - 각 액션 실행 시 Sonner 토스트 메시지 표시
 
-5. **이미지 편집 모달**
-   - **UI 구성**:
-     - ShadCN의 `Dialog` 컴포넌트 사용
-     - 이미지 미리보기
-     - 제목 및 설명 편집
-     - 태그 관리 (추가/삭제)
-     - 공개/비공개 토글
-   - **상호작용**:
-     - 저장 시 상세 모달로 돌아가기
-     - 취소 시 변경사항 폐기
+5. **커뮤니티 공유 모달**
+  - **UI 구성**:
+    - 제목 입력 필드
+    - 설명 입력 필드
+    - 태그 입력 및 관리
+    - 공유 버튼
+    - **상호작용**:
+    - 태그 추가/삭제
+    - 입력 필드 유효성 검사
+    - 공유 완료 시 토스트 메시지
+    - 공개/비공개 설정
 
 #### 2. 사용자 흐름 및 상호작용
 
@@ -85,7 +87,7 @@
    - 공개/비공개 상태 변경
 
 3. **커뮤니티 공유**
-   - 준비 중 메시지 표시 (Sonner 토스트)
+   - 공유 버튼 클릭 → 공유 모달 열기 → 정보 입력 → 공유하기 → 완료 메시지
 
 #### 3. 테스트 항목
 
@@ -119,29 +121,34 @@
   interface IGalleryRequest {
     page?: number;
     limit?: number;
-    category?: string;
-    tags?: string[];
+    artStyle?: string;
+    colorTone?: string;
     sortBy?: 'latest' | 'oldest';
     isPublic?: boolean;
+    userId?: string; // 현재 로그인한 사용자의 이미지만 조회할 경우
   }
   ```
 - **응답 데이터**:
   ```typescript
   interface IGalleryResponse {
     images: Array<{
-      id: string;
-      imageUrl: string;
-      title: string;
-      description: string;
+      id: number;
+      userId: string;
+      filePath: string;
       prompt: string;
-      styleOptions: {
-        artStyle: string;
-        colorTone: string;
-      };
-      category: string;
+      artStyle: string;
+      colorTone: string;
       tags: string[];
       isPublic: boolean;
       createdAt: string;
+      updatedAt: string;
+      post?: {
+        id: number;
+        title: string;
+        description: string | null;
+        createdAt: string;
+        updatedAt: string;
+      } | null;
     }>;
     totalCount: number;
     hasMore: boolean;
@@ -156,16 +163,15 @@
   ```typescript
   interface IUploadRequest {
     image: File;
-    title: string;
-    description: string;
     prompt: string;
-    styleOptions: {
-      artStyle: string;
-      colorTone: string;
-    };
-    category: string;
+    artStyle: string;
+    colorTone: string;
     tags: string[];
     isPublic: boolean;
+    post?: {
+      title: string;
+      description?: string;
+    };
   }
   ```
 - **응답 데이터**:
@@ -173,19 +179,23 @@
   interface IUploadResponse {
     success: boolean;
     image?: {
-      id: string;
-      imageUrl: string;
-      title: string;
-      description: string;
+      id: number;
+      userId: string;
+      filePath: string;
       prompt: string;
-      styleOptions: {
-        artStyle: string;
-        colorTone: string;
-      };
-      category: string;
+      artStyle: string;
+      colorTone: string;
       tags: string[];
       isPublic: boolean;
       createdAt: string;
+      updatedAt: string;
+      post?: {
+        id: number;
+        title: string;
+        description: string | null;
+        createdAt: string;
+        updatedAt: string;
+      } | null;
     };
     error?: {
       code: string;
@@ -201,11 +211,14 @@
 - **요청 데이터**:
   ```typescript
   interface IUpdateRequest {
-    title?: string;
-    description?: string;
-    category?: string;
+    artStyle?: string;
+    colorTone?: string;
     tags?: string[];
     isPublic?: boolean;
+    post?: {
+      title?: string;
+      description?: string;
+    };
   }
   ```
 - **응답 데이터**:
@@ -213,20 +226,23 @@
   interface IUpdateResponse {
     success: boolean;
     image?: {
-      id: string;
-      imageUrl: string;
-      title: string;
-      description: string;
+      id: number;
+      userId: string;
+      filePath: string;
       prompt: string;
-      styleOptions: {
-        artStyle: string;
-        colorTone: string;
-      };
-      category: string;
+      artStyle: string;
+      colorTone: string;
       tags: string[];
       isPublic: boolean;
       createdAt: string;
       updatedAt: string;
+      post?: {
+        id: number;
+        title: string;
+        description: string | null;
+        createdAt: string;
+        updatedAt: string;
+      } | null;
     };
     error?: {
       code: string;
@@ -258,8 +274,8 @@
   ```typescript
   interface IShareRequest {
     title: string;
-    description: string;
-    isPublic: boolean;
+    description?: string;
+    tags: string[];
   }
   ```
 - **응답 데이터**:
@@ -267,12 +283,20 @@
   interface IShareResponse {
     success: boolean;
     post?: {
-      id: string;
-      imageUrl: string;
+      id: number;
+      imageId: number;
+      userId: string;
       title: string;
-      description: string;
-      userName: string;
+      description: string | null;
       createdAt: string;
+      updatedAt: string;
+      image: {
+        filePath: string;
+        prompt: string;
+        artStyle: string;
+        colorTone: string;
+        tags: string[];
+      };
     };
     error?: {
       code: string;

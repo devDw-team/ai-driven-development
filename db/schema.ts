@@ -12,7 +12,7 @@ import { relations } from 'drizzle-orm'
 export const images = pgTable('images', {
     id: serial('id').primaryKey(),
     userId: text('user_id').notNull(), // Clerk user ID
-    filePath: text('file_path').notNull(), // 컬럼명 변경
+    filePath: text('file_path').notNull(),
     prompt: text('prompt').notNull(),
     artStyle: text('art_style').notNull(),
     colorTone: text('color_tone').notNull(),
