@@ -20,6 +20,7 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    domains: ['img.clerk.com', 'images.clerk.dev'],
   },
   reactStrictMode: true,
   experimental: {
