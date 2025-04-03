@@ -90,11 +90,13 @@ export default function PostDetail() {
       }
 
       const data = await response.json();
-      setPost(prev => prev ? {
-        ...prev,
-        isLiked: data.isLiked,
-        likes: data.likes,
-      } : null);
+      if (data.success && data.data) {
+        setPost(prev => prev ? {
+          ...prev,
+          isLiked: data.data.isLiked,
+          likes: data.data.likes,
+        } : null);
+      }
     } catch (err) {
       console.error('Error toggling like:', err);
       toast.error('좋아요 처리에 실패했습니다.');

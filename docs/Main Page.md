@@ -174,7 +174,7 @@
   }
   ```
 
-#### 4. 좋아요 관리 API ⏳ TODO
+#### 4. 좋아요 관리 API ✅ 구현됨
 
 - **파일 위치**: `app/api/post/[postId]/like/route.ts`
 - **HTTP 메서드**: 
@@ -211,7 +211,7 @@
   }
   ```
 
-#### 5. 댓글 관리 API ⏳ TODO
+#### 5. 댓글 관리 API ✅ 구현됨
 
 - **파일 위치**: `app/api/post/[postId]/comments/route.ts`
 - **HTTP 메서드**: 

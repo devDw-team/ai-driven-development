@@ -41,9 +41,6 @@ export async function POST(
     // 게시물 존재 여부 확인
     const post = await db.query.posts.findFirst({
       where: eq(posts.id, postId),
-      with: {
-        likes: true,
-      },
     });
 
     if (!post) {
@@ -84,24 +81,19 @@ export async function POST(
     }
 
     // 업데이트된 좋아요 수와 상태 조회
-    const updatedPost = await db.query.posts.findFirst({
-      where: eq(posts.id, postId),
-      with: {
-        likes: true,
-      },
+    const updatedLikes = await db.query.likes.findMany({
+      where: eq(likes.postId, postId),
     });
 
-    if (!updatedPost) {
-      throw new Error('게시물을 찾을 수 없습니다.');
-    }
-
-    const isLiked = updatedPost.likes.some(like => like.userId === userId);
-    const totalLikes = updatedPost.likes.length;
+    const isLiked = updatedLikes.some(like => like.userId === userId);
+    const totalLikes = updatedLikes.length;
 
     return NextResponse.json({
       success: true,
-      likes: totalLikes,
-      isLiked,
+      data: {
+        isLiked,
+        likes: totalLikes,
+      },
     });
   } catch (error) {
     console.error('Error toggling like:', error);
@@ -152,12 +144,9 @@ export async function GET(
       );
     }
 
-    // 게시물과 좋아요 정보 조회
+    // 게시물 존재 여부 확인
     const post = await db.query.posts.findFirst({
       where: eq(posts.id, postId),
-      with: {
-        likes: true,
-      },
     });
 
     if (!post) {
@@ -173,13 +162,20 @@ export async function GET(
       );
     }
 
-    const isLiked = post.likes.some(like => like.userId === userId);
-    const totalLikes = post.likes.length;
+    // 좋아요 상태와 수 조회
+    const postLikes = await db.query.likes.findMany({
+      where: eq(likes.postId, postId),
+    });
+
+    const isLiked = postLikes.some(like => like.userId === userId);
+    const totalLikes = postLikes.length;
 
     return NextResponse.json({
       success: true,
-      likes: totalLikes,
-      isLiked,
+      data: {
+        isLiked,
+        likes: totalLikes,
+      },
     });
   } catch (error) {
     console.error('Error getting like status:', error);
