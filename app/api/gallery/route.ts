@@ -4,6 +4,8 @@ import { images, posts } from '@/db/schema'
 import { eq, and, desc, asc, sql } from 'drizzle-orm'
 import { IGalleryRequest, IGalleryResponse } from '@/types'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams

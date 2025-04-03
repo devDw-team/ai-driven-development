@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent, useEffect, Suspense } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -14,7 +14,7 @@ import { useUser } from '@clerk/nextjs';
 // 목업 데이터
 const MOCK_IMAGE_URL = "https://picsum.photos/800/600";
 
-export default function GeneratePage() {
+function GenerateContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState('');
@@ -274,5 +274,19 @@ export default function GeneratePage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    }>
+      <GenerateContent />
+    </Suspense>
   );
 } 

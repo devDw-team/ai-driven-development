@@ -4,6 +4,8 @@ import { posts, images, likes, comments } from '@/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { getAuth } from '@clerk/nextjs/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { userId } = getAuth(request);

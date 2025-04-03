@@ -1,3 +1,22 @@
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '대시보드 | AI 이미지 생성',
+  description: 'AI를 사용하여 이미지를 생성하는 대시보드입니다.',
+}
+
+export default function DashboardPage() {
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">대시보드</h1>
+      <div className="grid gap-6">
+        {/* 여기에 대시보드 컨텐츠를 추가할 수 있습니다 */}
+      </div>
+    </div>
+  )
+}
+
+/*
 const handleGenerate = async () => {
   if (!prompt.trim()) {
     toast({
@@ -43,4 +62,4 @@ const handleGenerate = async () => {
   } finally {
     setIsGenerating(false);
   }
-}; 
+}; */
