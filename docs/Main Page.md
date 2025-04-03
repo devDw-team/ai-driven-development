@@ -89,7 +89,7 @@
 
 ### 백엔드 기능명세서
 
-#### 1. 프롬프트를 통한 이미지 생성 API 
+#### 1. 프롬프트를 통한 이미지 생성 API ✅ 구현됨
 
 - **파일 위치**: `app/api/generate/route.ts`
 - **HTTP 메서드**: `POST`
@@ -121,7 +121,7 @@
   }
   ```
 
-#### 2. 커뮤니티 피드 API 
+#### 2. 커뮤니티 피드 API ⏳ TODO
 
 - **파일 위치**: `app/api/community/feed/route.ts`
 - **설명**: 각 사용자들이 자신의 갤러리에서 공개(isPublic: true)로 설정한 모든 이미지들을 조회하는 API입니다. 페이지네이션과 정렬 기능을 제공하여 효율적인 피드 탐색이 가능합니다.
@@ -153,7 +153,7 @@
   }
   ```
 
-#### 3. 게시물 상세 정보 API 
+#### 3. 게시물 상세 정보 API ⏳ TODO
 
 - **파일 위치**: `app/api/post/[postId]/route.ts`
 - **HTTP 메서드**: `GET`
@@ -174,7 +174,7 @@
   }
   ```
 
-#### 4. 좋아요 관리 API 
+#### 4. 좋아요 관리 API ⏳ TODO
 
 - **파일 위치**: `app/api/post/[postId]/like/route.ts`
 - **HTTP 메서드**: 
@@ -211,7 +211,7 @@
   }
   ```
 
-#### 5. 댓글 관리 API 
+#### 5. 댓글 관리 API ⏳ TODO
 
 - **파일 위치**: `app/api/post/[postId]/comments/route.ts`
 - **HTTP 메서드**: 

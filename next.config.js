@@ -13,6 +13,12 @@ const nextConfig = {
         hostname: 'nllylmjqgcmjjmueltux.supabase.co',
         pathname: '/storage/v1/object/public/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   reactStrictMode: true,
