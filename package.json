@@ -47,7 +47,11 @@
     "drizzle-kit": "^0.30.6",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.25",
+    "lightningcss": "^1.25.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "^1.25.0"
   }
 }
