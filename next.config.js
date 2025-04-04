@@ -34,6 +34,14 @@ const nextConfig = {
     };
     return config;
   },
+  // Tailwind CSS 빌드 프로세스 통합
+  webpackDevMiddleware: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
+    return config;
+  },
 };
 
 module.exports = nextConfig; 
