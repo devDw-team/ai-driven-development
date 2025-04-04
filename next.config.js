@@ -25,6 +25,14 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizeCss: false,
+    serverActions: true,
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': __dirname,
+    };
+    return config;
   },
 };
 
