@@ -24,7 +24,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   experimental: {
-    optimizeCss: false,
+    optimizeCss: true,
     serverActions: true,
   },
   webpack: (config) => {

@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate": "tsx scripts/migrate.ts",
-    "postinstall": "npm run build:css",
-    "build:css": "npx tailwindcss -i ./app/globals.css -o ./app/styles.css"
+    "migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.12",
@@ -49,12 +47,8 @@
     "drizzle-kit": "^0.30.6",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.25",
-    "lightningcss": "^1.25.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  },
-  "optionalDependencies": {
-    "lightningcss-linux-x64-gnu": "^1.25.0"
   }
 }
